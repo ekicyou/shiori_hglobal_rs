@@ -73,7 +73,7 @@ impl GStr {
         }
     }
 
-    /// &[u8]をGStrにキャプチャーします。
+    /// HGLOBALを新たに作成し、&[u8]をGStrにクローンします。
     /// drop時にHGLOBALを開放しません。
     /// shiori応答の作成に利用してください。
     pub fn clone_from_slice_nofree(bytes: &[u8]) -> GStr {
