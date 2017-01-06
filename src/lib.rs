@@ -101,7 +101,7 @@ impl GStr {
     /// 格納データを「ANSI STRING(JP環境ではSJIS)」とみなして、OsStrに変換する。
     /// MultiByteToWideChar()を利用する。
     /// SHIORI::load()文字列の取り出しに利用する。
-    pub fn to_os_str(&self) -> Result<OsString, GStrError> {
+    pub fn to_load_str(&self) -> Result<OsString, GStrError> {
         let bytes = self.to_bytes();
         let s = Encoding::ANSI.to_string(bytes).map_err(|_| GStrError::AnsiEncode)?;
         let os_str = OsString::from(s);
@@ -133,11 +133,11 @@ fn gstr_test() {
         assert_eq!(sjis.len(), 10);
         let src = GStr::clone_from_slice_nofree(&sjis[..]);
         assert_eq!(src.len(), 10);
-        let src_osstr = src.to_os_str().unwrap();
+        let src_osstr = src.to_load_str().unwrap();
         assert_eq!(src_osstr.len(), 13);
 
         let dst = GStr::new(src.handle(), src.len());
-        assert_eq!(src_osstr, dst.to_os_str().unwrap());
+        assert_eq!(src_osstr, dst.to_load_str().unwrap());
 
         let src_str = src_osstr.to_str().unwrap();
         assert_eq!(src_str, text);
