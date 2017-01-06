@@ -49,7 +49,7 @@ impl GStr {
     /// HGLOBALをGStrにキャプチャーします。
     /// drop時にHGLOBALを開放します。
     /// shiori::load/requestのHGLOBAL受け入れに利用してください。
-    pub fn new(h: HGLOBAL, len: usize) -> GStr {
+    pub fn capture(h: HGLOBAL, len: usize) -> GStr {
         GStr {
             h: h,
             len: len,
@@ -110,7 +110,7 @@ impl GStr {
 
     /// 格納データを「UTF-8」とみなして、strに変換する。
     /// SHIORI::request()文字列の取り出しに利用する。
-    pub fn to_str(&self) -> Result<&str, GStrError> {
+    pub fn to_req_str(&self) -> Result<&str, GStrError> {
         let bytes = self.to_bytes();
         Ok(str::from_utf8(bytes)?)
     }
@@ -121,11 +121,11 @@ fn gstr_test() {
     {
         let text = "適当なGSTR";
         let src = GStr::clone_from_slice_nofree(text.as_bytes());
-        assert_eq!(src.to_str().unwrap(), text);
+        assert_eq!(src.to_req_str().unwrap(), text);
         assert_eq!(src.len(), 13);
 
-        let dst = GStr::new(src.handle(), src.len());
-        assert_eq!(src.to_str().unwrap(), dst.to_str().unwrap());
+        let dst = GStr::capture(src.handle(), src.len());
+        assert_eq!(dst.to_req_str().unwrap(), text);
     }
     {
         let text = "適当なGSTR";
@@ -136,7 +136,7 @@ fn gstr_test() {
         let src_osstr = src.to_load_str().unwrap();
         assert_eq!(src_osstr.len(), 13);
 
-        let dst = GStr::new(src.handle(), src.len());
+        let dst = GStr::capture(src.handle(), src.len());
         assert_eq!(src_osstr, dst.to_load_str().unwrap());
 
         let src_str = src_osstr.to_str().unwrap();
