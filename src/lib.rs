@@ -100,6 +100,7 @@ impl GStr {
 
     /// 格納データを「ANSI STRING(JP環境ではSJIS)」とみなして、OsStrに変換する。
     /// MultiByteToWideChar()を利用する。
+    /// SHIORI::load()文字列の取り出しに利用する。
     pub fn to_os_str(&self) -> Result<OsString, GStrError> {
         let bytes = self.to_bytes();
         let s = Encoding::ANSI.to_string(bytes).map_err(|_| GStrError::AnsiEncode)?;
@@ -108,6 +109,7 @@ impl GStr {
     }
 
     /// 格納データを「UTF-8」とみなして、strに変換する。
+    /// SHIORI::request()文字列の取り出しに利用する。
     pub fn to_str(&self) -> Result<&str, GStrError> {
         let bytes = self.to_bytes();
         Ok(str::from_utf8(bytes)?)
