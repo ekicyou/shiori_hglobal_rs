@@ -2,7 +2,8 @@ platform:
   - x64
 
 init:
-  - ps: Set-Culture ja-JP
+  - ps: Set-WinSystemLocale ja-JP
+  - ps: Restart-Computer
 
 environment:
   matrix:
