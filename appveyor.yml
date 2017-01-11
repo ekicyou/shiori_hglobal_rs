@@ -1,6 +1,9 @@
 platform:
   - x64
 
+init:
+  - ps: Set-Culture ja-JP
+
 environment:
   matrix:
     - TARGET: i686-pc-windows-msvc
