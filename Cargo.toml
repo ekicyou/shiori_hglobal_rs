@@ -1,17 +1,16 @@
 [package]
 name = "shiori_hglobal"
-version = "0.1.1"
+version = "0.1.2"
 authors = ["ekicyou <dot.station@gmail.com>"]
 repository = "https://github.com/ekicyou/shiori_hglobal_rs"
 keywords = ["shiori", "ukagaka"]
 license = "MIT"
-license-file = "LICENSE"
 readme = "README.md"
 description = "impl str for HGLOBAL{...}"
 
 [dependencies]
-local-encoding = "^0.2.0"
+local-encoding = "^0.2"
 
 [target."cfg(windows)".dependencies]
-kernel32-sys = "^0.2.2"
-winapi = "^0.2.8"
+kernel32-sys = "^0.2"
+winapi = "^0.2"
