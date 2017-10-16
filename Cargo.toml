@@ -1,6 +1,6 @@
 [package]
 name = "shiori_hglobal"
-version = "0.1.1"
+version = "0.1.2"
 authors = ["ekicyou <dot.station@gmail.com>"]
 repository = "https://github.com/ekicyou/shiori_hglobal_rs"
 keywords = ["shiori", "ukagaka"]

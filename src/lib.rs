@@ -63,7 +63,7 @@ impl GStr {
         unsafe {
             let h = GlobalAlloc(GMEM_FIXED, len as size_t);
             let p = transmute::<HGLOBAL, *mut u8>(h);
-            let mut dst = from_raw_parts_mut::<u8>(p, len);
+            let dst = from_raw_parts_mut::<u8>(p, len);
             dst[..].clone_from_slice(bytes);
             GStr {
                 h: h,
