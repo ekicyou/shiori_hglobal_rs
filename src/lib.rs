@@ -1,18 +1,18 @@
 #![cfg(any(windows))]
 
 extern crate winapi;
-extern crate kernel32;
-extern crate local_encoding;
+mod enc;
+mod windows;
 
-
-use std::mem::transmute;
-use std::slice::{from_raw_parts, from_raw_parts_mut};
+use enc::{Encoder, Encoding};
 use std::ffi::OsString;
 use std::str;
-use std::str::Utf8Error;
-use winapi::{HGLOBAL, UINT, size_t};
-use kernel32::{GlobalFree, GlobalAlloc};
-use local_encoding::{Encoding, Encoder};
+use winapi::_core::mem::transmute;
+use winapi::_core::slice::{from_raw_parts, from_raw_parts_mut};
+use winapi::_core::str::Utf8Error;
+use winapi::shared::minwindef::{HGLOBAL, UINT};
+use winapi::um::winbase::{GlobalAlloc, GlobalFree};
+use winapi::vc::vcruntime::size_t;
 
 const GMEM_FIXED: UINT = 0;
 
@@ -80,7 +80,7 @@ impl GStr {
         GStr::clone_from_slice_impl(bytes, false)
     }
 
-    /// 要素を&[u8]として取り出します。
+    /// 要素を&[u8]として参照します。
     pub fn to_bytes(&self) -> &[u8] {
         unsafe {
             let p = transmute::<HGLOBAL, *mut u8>(self.h);
@@ -98,19 +98,21 @@ impl GStr {
         self.len
     }
 
-    /// 格納データを「ANSI STRING(JP環境ではSJIS)」とみなして、OsStrに変換する。
+    /// 格納データを「ANSI STRING(JP環境ではSJIS)」とみなして、OsStrに変換します。
     /// MultiByteToWideChar()を利用する。
     /// SHIORI::load()文字列の取り出しに利用する。
-    pub fn to_load_str(&self) -> Result<OsString, GStrError> {
+    pub fn to_ansi_str(&self) -> Result<OsString, GStrError> {
         let bytes = self.to_bytes();
-        let s = Encoding::ANSI.to_string(bytes).map_err(|_| GStrError::AnsiEncode)?;
+        let s = Encoding::ANSI
+            .to_string(bytes)
+            .map_err(|_| GStrError::AnsiEncode)?;
         let os_str = OsString::from(s);
         Ok(os_str)
     }
 
     /// 格納データを「UTF-8」とみなして、strに変換する。
     /// SHIORI::request()文字列の取り出しに利用する。
-    pub fn to_req_str(&self) -> Result<&str, GStrError> {
+    pub fn to_utf8_str(&self) -> Result<&str, GStrError> {
         let bytes = self.to_bytes();
         Ok(str::from_utf8(bytes)?)
     }
@@ -121,11 +123,11 @@ fn gstr_test() {
     {
         let text = "適当なGSTR";
         let src = GStr::clone_from_slice_nofree(text.as_bytes());
-        assert_eq!(src.to_req_str().unwrap(), text);
+        assert_eq!(src.to_utf8_str().unwrap(), text);
         assert_eq!(src.len(), 13);
 
         let dst = GStr::capture(src.handle(), src.len());
-        assert_eq!(dst.to_req_str().unwrap(), text);
+        assert_eq!(dst.to_utf8_str().unwrap(), text);
     }
     {
         let text = "適当なGSTR";
@@ -133,11 +135,11 @@ fn gstr_test() {
         assert_eq!(sjis.len(), 10);
         let src = GStr::clone_from_slice_nofree(&sjis[..]);
         assert_eq!(src.len(), 10);
-        let src_osstr = src.to_load_str().unwrap();
+        let src_osstr = src.to_ansi_str().unwrap();
         assert_eq!(src_osstr.len(), 13);
 
         let dst = GStr::capture(src.handle(), src.len());
-        assert_eq!(src_osstr, dst.to_load_str().unwrap());
+        assert_eq!(src_osstr, dst.to_ansi_str().unwrap());
 
         let src_str = src_osstr.to_str().unwrap();
         assert_eq!(src_str, text);
