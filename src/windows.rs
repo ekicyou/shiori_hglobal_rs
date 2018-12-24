@@ -3,7 +3,7 @@
 
 #![allow(dead_code)]
 
-use enc::Encoder;
+use crate::enc::Encoder;
 use std::ffi::OsStr;
 use std::io::{Error, ErrorKind, Result};
 use std::os::windows::ffi::OsStrExt;

@@ -1,10 +1,9 @@
 #![cfg(any(windows))]
 
-extern crate winapi;
 mod enc;
 mod windows;
 
-use enc::{Encoder, Encoding};
+use crate::enc::{Encoder, Encoding};
 use std::ffi::OsString;
 use std::str;
 use winapi::_core::mem::transmute;
